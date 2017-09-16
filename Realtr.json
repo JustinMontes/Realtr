@@ -1,0 +1,238 @@
+{
+  "luis_schema_version": "2.1.0",
+  "versionId": "0.1",
+  "name": "Realtr",
+  "desc": "An apartment bot.",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "FindApartments"
+    },
+    {
+      "name": "FindWebsites"
+    },
+    {
+      "name": "None"
+    },
+    {
+      "name": "Help"
+    }
+  ],
+  "entities": [
+    {
+      "name": "ApartmentAge"
+    },
+    {
+      "name": "ApartmentPrice"
+    },
+    {
+      "name": "ApartmentWebsites"
+    },
+    {
+      "name": "SearchApartments"
+    }
+  ],
+  "composites": [],
+  "closedLists": [],
+  "bing_entities": [
+    "age"
+  ],
+  "actions": [],
+  "model_features": [],
+  "regex_features": [],
+  "utterances": [
+    {
+      "text": "zillow",
+      "intent": "FindWebsites",
+      "entities": []
+    },
+    {
+      "text": "how do i cook",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "new apartments",
+      "intent": "FindApartments",
+      "entities": [
+        {
+          "entity": "SearchApartments",
+          "startPos": 0,
+          "endPos": 13
+        }
+      ]
+    },
+    {
+      "text": "find apartment near me",
+      "intent": "FindApartments",
+      "entities": [
+        {
+          "entity": "SearchApartments",
+          "startPos": 0,
+          "endPos": 18
+        }
+      ]
+    },
+    {
+      "text": "what apartments are near me",
+      "intent": "FindApartments",
+      "entities": [
+        {
+          "entity": "SearchApartments",
+          "startPos": 0,
+          "endPos": 26
+        }
+      ]
+    },
+    {
+      "text": "apartments built in the last 10 years",
+      "intent": "FindApartments",
+      "entities": [
+        {
+          "entity": "SearchApartments",
+          "startPos": 0,
+          "endPos": 9
+        },
+        {
+          "entity": "ApartmentAge",
+          "startPos": 11,
+          "endPos": 18
+        },
+        {
+          "entity": "ApartmentAge",
+          "startPos": 24,
+          "endPos": 36
+        }
+      ]
+    },
+    {
+      "text": "apartments newer than 10 years old",
+      "intent": "FindApartments",
+      "entities": [
+        {
+          "entity": "SearchApartments",
+          "startPos": 0,
+          "endPos": 9
+        },
+        {
+          "entity": "ApartmentAge",
+          "startPos": 11,
+          "endPos": 15
+        },
+        {
+          "entity": "ApartmentAge",
+          "startPos": 22,
+          "endPos": 33
+        }
+      ]
+    },
+    {
+      "text": "apartments under $900",
+      "intent": "FindApartments",
+      "entities": [
+        {
+          "entity": "SearchApartments",
+          "startPos": 0,
+          "endPos": 9
+        },
+        {
+          "entity": "ApartmentPrice",
+          "startPos": 17,
+          "endPos": 17
+        },
+        {
+          "entity": "ApartmentPrice",
+          "startPos": 18,
+          "endPos": 20
+        }
+      ]
+    },
+    {
+      "text": "padmapper",
+      "intent": "FindWebsites",
+      "entities": []
+    },
+    {
+      "text": "apartment finder",
+      "intent": "FindWebsites",
+      "entities": [
+        {
+          "entity": "ApartmentWebsites",
+          "startPos": 10,
+          "endPos": 15
+        }
+      ]
+    },
+    {
+      "text": "apartment finding websites",
+      "intent": "FindWebsites",
+      "entities": [
+        {
+          "entity": "SearchApartments",
+          "startPos": 10,
+          "endPos": 16
+        },
+        {
+          "entity": "ApartmentWebsites",
+          "startPos": 18,
+          "endPos": 25
+        }
+      ]
+    },
+    {
+      "text": "what websites help find apartments",
+      "intent": "FindWebsites",
+      "entities": [
+        {
+          "entity": "ApartmentWebsites",
+          "startPos": 5,
+          "endPos": 12
+        }
+      ]
+    },
+    {
+      "text": "apartments in boston",
+      "intent": "FindApartments",
+      "entities": [
+        {
+          "entity": "SearchApartments",
+          "startPos": 0,
+          "endPos": 12
+        }
+      ]
+    },
+    {
+      "text": "new apartments in cambridge",
+      "intent": "FindApartments",
+      "entities": [
+        {
+          "entity": "SearchApartments",
+          "startPos": 0,
+          "endPos": 26
+        }
+      ]
+    },
+    {
+      "text": "apartments for rent in brookline",
+      "intent": "FindApartments",
+      "entities": [
+        {
+          "entity": "SearchApartments",
+          "startPos": 0,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "apartments in jamaica plain",
+      "intent": "FindApartments",
+      "entities": [
+        {
+          "entity": "SearchApartments",
+          "startPos": 0,
+          "endPos": 9
+        }
+      ]
+    }
+  ]
+}

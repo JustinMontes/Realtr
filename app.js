@@ -2,6 +2,9 @@
 
 var restify = require('restify');
 var builder = require('botbuilder');
+var Store = require('./store');
+const LUIS_APP_URL = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/d3b4d78d-c051-451f-b0f2-4d86b381a8ef?subscription-key=35e4c714b5004788b7e877a86cc8858f&timezoneOffset=0&verbose=true&q='
+
 var server = restify.createServer();
 
 server.listen(process.env.port || process.env.PORT || 3978, function () {
@@ -14,45 +17,42 @@ var connector = new builder.ChatConnector({
   appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
-var bot = new builder.UniversalBot(connector);
-
-// Add a global LUIS recognizer to your bot using the endpoint URL of your LUIS app
-var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/2c2afc3e-5f39-4b6f-b8ad-c47ce1b98d8a?subscription-key=9823b65a8c9045f8bce7fee87a5e1fbc';
-bot.recognizer(new builder.LuisRecognizer(model));
-
-// handle the proactive initiated dialog
-bot.dialog('/survey', [
-  function (session, args, next) {
-    var prompt = ('Which kindoms would please you? (Cambridge, Allston, Brookline, etc)');
-    builder.Prompts.choice(session, prompt, "Location");
-  },
-  function (session, results) {
-    session.send("Excellent. Let me look into that my leige.");
-    session.send(results);
-    session.endDialog();
-  }
-]);
-
-// initiate a dialog proactively
-function startProactiveDialog(address) {
-  bot.beginDialog(address, "*:/survey");
-}
-
-var savedAddress;
 server.post('/api/messages', connector.listen());
 
-// Do GET this endpoint to start a dialog proactively
-server.get('/api/CustomWebApi', (req, res, next) => {
-    startProactiveDialog(savedAddress);
-    res.send('triggered');
-    next();
-  }
-);
+var bot = new builder.UniversalBot(connector, function (session) {
+  session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
+});
+
+
+// Install a custom recognizer to look for user saying 'help' or 'goodbye'.
+bot.recognizer({
+  recognize: function (context, done) {
+  var intent = { score: 0.0 };
+
+        if (context.message.text) {
+            switch (context.message.text.toLowerCase()) {
+                case 'help':
+                    intent = { score: 1.0, intent: 'Help' };
+                    break;
+                case 'hi':
+                    intent = { score: 1.0, intent: 'Hi' };
+                    break;
+                case 'goodbye':
+                    intent = { score: 1.0, intent: 'Goodbye' };
+                    break;
+            }
+        }
+        done(null, intent);
+    }
+});
+
+// You can provide your own model by specifing the 'LUIS_MODEL_URL' environment variable
+// This Url can be obtained by uploading or creating your model from the LUIS portal: https://www.luis.ai/
+var luisAppUrl = process.env.LUIS_APP_URL || 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/d3b4d78d-c051-451f-b0f2-4d86b381a8ef?subscription-key=35e4c714b5004788b7e877a86cc8858f&timezoneOffset=0&verbose=true&q=';
+bot.recognizer(new builder.LuisRecognizer(luisAppUrl));
 
 // root dialog
-bot.dialog('/', function(session, args) {
-
-  savedAddress = session.message.address;
+bot.dialog('Hi', function(session, args) {
 
   var message = 'Hello, I\'m Tyrion Realister.';
   session.send({text: message,
@@ -70,7 +70,81 @@ bot.dialog('/', function(session, args) {
 
   connector.url
 
-  setTimeout(() => {
-    startProactiveDialog(savedAddress);
-  }, 5000)
+}).triggerAction({
+  matches: 'Hi'
 });
+
+
+bot.dialog('FindApartments', [
+  function (session, args, next) {
+      session.send('Welcome to the Apartment finder! We are analyzing your message: \'%s\'', session.message.text);
+
+      // try extracting entities
+      var cityEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'builtin.geography.city');
+      if (cityEntity) {
+          // city entity detected, continue to next step
+          session.dialogData.searchType = 'city';
+          next({ response: cityEntity.entity });
+      } else {
+          // no entities detected, ask user for a destination
+          builder.Prompts.text(session, 'Please enter your destination');
+      }
+  },
+  function (session, results) {
+      var destination = results.response;
+
+      var message = 'Looking for apartments';
+      message += ' in %s...';
+
+      session.send(message, destination);
+
+      // Async search
+      Store
+          .searchApartments(destination)
+          .then(function (apartments) {
+              // args
+              session.send('I found %d apartments:', apartments.length);
+
+              var message = new builder.Message()
+                  .attachmentLayout(builder.AttachmentLayout.carousel)
+                  .attachments(apartments.map(apartmentAsAttachment));
+
+              session.send(message);
+
+              // End
+              session.endDialog();
+          });
+  }
+]).triggerAction({
+  matches: 'FindApartments',
+  onInterrupted: function (session) {
+      session.send('Please provide a destination');
+  }
+});
+
+// help command
+bot.dialog('Help', function (session) {
+  session.endDialog('Don\'t feel bad, Sansa asks me all the time. Try asking me things like \'find apartments in Cambridge\' or \'find apartments near Boston University\'');
+}).triggerAction({
+  matches: 'Help'
+});
+
+// Add a global endConversation() action that is bound to the 'Goodbye' intent
+bot.endConversationAction('goodbyeAction', "Ok... See you later.", { matches: 'Goodbye' });
+
+// Helpers
+function apartmentAsAttachment(apartment) {
+  return new builder.HeroCard()
+      .title(apartment.name)
+      .subtitle('%d stars. %d reviews. From $%d per night.', apartment.rating, apartment.numberOfReviews, apartment.priceStarting)
+      .images([new builder.CardImage().url(apartment.image)])
+      .buttons([
+          new builder.CardAction()
+              .title('More details')
+              .type('openUrl')
+              .value('https://www.bing.com/search?q=apartments+in+' + encodeURIComponent(apartment.location))
+      ]);
+}
+// function searchApartments(destination) {
+  
+// }
