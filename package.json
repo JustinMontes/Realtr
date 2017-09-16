@@ -1,0 +1,29 @@
+{
+  "name": "realtr",
+  "version": "0.0.1",
+  "description": "An apartment finding, analyzing and helping bot.",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GFynbo/Realtr.git"
+  },
+  "keywords": [
+    "node",
+    "js",
+    "bot",
+    "microsoft"
+  ],
+  "author": "Gavin Fynbo, Tatiana Diaz-Gallegos, Justin Montes, Jio Jung",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GFynbo/Realtr/issues"
+  },
+  "homepage": "https://github.com/GFynbo/Realtr#readme",
+  "dependencies": {
+    "botbuilder": "^3.9.1",
+    "restify": "^6.0.0"
+  }
+}
