@@ -1,6 +1,4 @@
 ~~~
-
-
 RRRRRRRRRRRRRRRRR                                       lllllll         tttt                             
 R::::::::::::::::R                                      l:::::l      ttt:::t                             
 R::::::RRRRRR:::::R                                     l:::::l      t:::::t                             
@@ -16,14 +14,7 @@ RR:::::R     R:::::R                                    l:::::l      t:::::t
 RR:::::R     R:::::Re::::::::e        a::::a    a:::::a l::::::l     t::::::tttt:::::tr:::::r            
 R::::::R     R:::::R e::::::::eeeeeeeea:::::aaaa::::::a l::::::l     tt::::::::::::::tr:::::r            
 R::::::R     R:::::R  ee:::::::::::::e a::::::::::aa:::al::::::l       tt:::::::::::ttr:::::r            
-RRRRRRRR     RRRRRRR    eeeeeeeeeeeeee  aaaaaaaaaa  aaaallllllll         ttttttttttt  rrrrrrr            
-
-
-
-
-
-
-                                                                                                          
+RRRRRRRR     RRRRRRR    eeeeeeeeeeeeee  aaaaaaaaaa  aaaallllllll         ttttttttttt  rrrrrrr                                        
 ~~~
 
 
