@@ -77,7 +77,7 @@ bot.dialog('Hi', function(session, args) {
 
 bot.dialog('FindApartments', [
   function (session, args, next) {
-      session.send('Welcome to the Apartment finder! We are analyzing your message: \'%s\'', session.message.text);
+      session.send('One moment, while I sober up..', session.message.text);
 
       // try extracting entities
       var cityEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'builtin.geography.city');
@@ -120,6 +120,52 @@ bot.dialog('FindApartments', [
   onInterrupted: function (session) {
       session.send('Please provide a destination');
   }
+});
+
+bot.dialog('FindRentalTrucks', [
+    function (session, args, next) {
+        session.send('One second while I find the best moving trucks in the land', session.message.text);
+
+        // try extracting entities
+        var rentalEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'builtin.vehicle');
+        if (rentalEntity) {
+            // city entity detected, continue to next step
+            session.dialogData.searchType = 'vehicle';
+            next({ response: rentalEntity.entity });
+        } else {
+            // no entities detected, ask user for a destination
+            builder.Prompts.text(session, 'Did you need help finding a vessle to move your belongings?');
+        }
+    },
+    function (session, results) {
+        var destination = results.response;
+
+        var message = "I'll be back after some drinks";
+
+        session.send(message, destination);
+
+        // Async search
+        Store
+            .searchApartments(destination)
+            .then(function (searchRentals) {
+                // args
+                session.send('I found %d places where you can rent trucks! How grand!:', searchRentals.length);
+
+                var message = new builder.Message()
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(apartments.map(apartmentAsAttachment));
+
+                session.send(message);
+
+                // End
+                session.endDialog();
+            });
+    }
+]).triggerAction({
+    matches: 'FindRentalTrucks',
+    onInterrupted: function (session) {
+        session.send('Did you have a preferred company?');
+    }
 });
 
 // help command
